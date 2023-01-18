@@ -38,7 +38,7 @@ func deleteMovie(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	for index, item := range movies {
 		if item.ID == params["id"] {
-			movie = append(movies[:index], movies[index+1:]...)
+			movies = append(movies[:index], movies[index+1:]...)
 			break
 		}
 	}
@@ -48,7 +48,7 @@ func deleteMovie(w http.ResponseWriter, r *http.Request) {
 
 func getMovie(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	params : mux.Vars(r)
+	params := mux.Vars(r)
 	for _, item := range movies {
 		if item.ID == params["id"] {
 			json.NewEncoder(w).Encode(item)
@@ -68,15 +68,15 @@ func createMovie(w http.ResponseWriter, r *http.Request) {
 }
 
 
-func updateMovie(w htto.ResponseWriter, r *http.Request) {
+func updateMovie(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
 
 	for index, item := range movies {
 		if item.ID == params["id"] {
-			movies = append(movies[:index],  movies[index+1]...)
+			movies = append(movies[:index], movies[index+1:]...)
 			var movie Movie
-			_ = json.NewDecoder(r.Body).Decode(&Movie)
+			_ = json.NewDecoder(r.Body).Decode(&movie)
 			movie.ID = params["id"]
 			movies = append(movies, movie)
 			json.NewEncoder(w).Encode(movie)
@@ -92,12 +92,12 @@ func main() {
 	movies = append(movies, Movie{ID: "1", Isbn:"43567", Title: "Movie One", Director: &Director{Firstname: "John", Lastname: "Doe"}})
 	movies = append(movies, Movie{ID: "2", Isbn: "46123", Title: "Movie Two", Director: &Director{Firstname: "Mary", Lastname: "Sue"}})
 
-	r.HandleFunc("/movies", getMovies).Method("GET")
-	r.HandleFunc("/movies/{id}", getMovie).Method("GET")
-	r.HandleFunc("/movies", createMovie).Method("PUT")
-	r.HandleFunc("/movies/{id}", updateMovie).Method("PUT")
-	r.HandleFunc("/movies/{id}", deleteMovie).Method("DELETE")
+	r.HandleFunc("/movies", getMovies).Methods("GET")
+	r.HandleFunc("/movies/{id}", getMovie).Methods("GET")
+	r.HandleFunc("/movies", createMovie).Methods("POST")
+	r.HandleFunc("/movies/{id}", updateMovie).Methods("PUT")
+	r.HandleFunc("/movies/{id}", deleteMovie).Methods("DELETE")
 
 	fmt.Printf("Starting server at port 8000\n")
-	log.Fatal(http.ListenAndServer(":8000", r))
+	log.Fatal(http.ListenAndServe(":8000", r))
 }
